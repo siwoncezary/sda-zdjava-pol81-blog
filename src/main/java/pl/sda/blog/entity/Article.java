@@ -1,14 +1,10 @@
 package pl.sda.blog.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +21,7 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Author author;
 
@@ -39,7 +36,9 @@ public class Article {
 
     private int rating;
 
-    @ManyToMany
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private Set<Tag> tags = new HashSet<>();
 
     public void addTag(Tag tag){

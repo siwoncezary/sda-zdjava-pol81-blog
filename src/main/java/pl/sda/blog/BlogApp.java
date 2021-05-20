@@ -3,10 +3,13 @@ package pl.sda.blog;
 import pl.sda.blog.entity.*;
 import pl.sda.blog.repository.JpaAuthorRepository;
 import pl.sda.blog.repository.JpaRepository;
+import pl.sda.blog.repository.JpaTagRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -15,26 +18,52 @@ public class BlogApp {
     static EntityManagerFactory factory = Persistence.createEntityManagerFactory("blog");
     static JpaRepository<Article, Long> articleRepo = new JpaRepository<>(factory, Article.class);
     static JpaAuthorRepository authors = new JpaAuthorRepository(factory, Author.class);
-    static private void printMenu(){
+    static JpaTagRepository tags = new JpaTagRepository(factory, Tag.class);
+
+    static private void printMenu() {
         System.out.println("1. Dodaj artykuł");
         System.out.println("2. Zmień tytuł artykułu");
         System.out.println("3. Usuń artykuł");
         System.out.println("4. Lista artykułów");
-        System.out.println("5. Wyszukaj artykuły dla autora"); // nowa opcja
+        System.out.println("5. Wyszukaj artykuły dla taga"); // nowa opcja
         System.out.println("6. Dodaj autora");
         System.out.println("7. Lista autorów");
         System.out.println("0. Koniec");
     }
-    static private void printAuthors(){
+
+    static private void findByTag(){
+        scanner.nextLine();
+        System.out.println("Wpisz id taga:");
+        long id = scanner.nextLong();
+        System.out.println(tags.findArticleByTag(id));
+    }
+
+    static private void removeArticleById(){
+        scanner.nextLine();
+        articleRepo.findAll().forEach(a -> System.out.println(a.getId() +" " + a.getTitle()));
+        System.out.println("Wpisz id artykułu:");
+        long id = scanner.nextLong();
+        articleRepo.deleteById(id);
+    }
+
+    static private void printAuthors() {
         authors.findAll().forEach(author -> {
-            System.out.println("Nick: " + author.getNick() +", email: " + author.getAddress());
+            System.out.println("Nick: " + author.getNick() + ", email: " + author.getAddress());
         });
     }
 
-    static private void addArticle(){
+    static private void addArticle() {
         scanner.nextLine();
         System.out.println("Wpisz tytuł:");
         String title = scanner.nextLine();
+        System.out.println("Wpisz tagi:");
+        List<String> tagLabel = new ArrayList<>();
+        //TODO napisać samodzielnie dodawanie istniejących tagów do artykułu
+//        while(true){
+//            Wczytywanie tagów i dodawanie do tagLabel
+//        }
+        //Przefiltrować, czy w repozytorium znajdują się tagi o label w tagLabel
+        //tags.findAll().stream().
         System.out.println("Wpisz nick autora:");
         authors.findAll().forEach(a -> System.out.println(a.getNick()));
         String authorNick = scanner.nextLine();
@@ -44,7 +73,8 @@ public class BlogApp {
             articleRepo.merge(article);
         });
     }
-    static private void changeTitle(){
+
+    static private void changeTitle() {
         scanner.nextLine();
         System.out.println("Wpisz id");
         long id = scanner.nextInt();
@@ -53,14 +83,15 @@ public class BlogApp {
         String title = scanner.nextLine();
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
-        Article art =  em.find(Article.class, id);
+        Article art = em.find(Article.class, id);
         if (art != null) {
             System.out.println("Changed title");
             art.setTitle(title);
         }
         em.getTransaction().commit();
     }
-    static private void changeTitleByMerge(){
+
+    static private void changeTitleByMerge() {
         scanner.nextLine();
         System.out.println("Wpisz id");
         long id = scanner.nextInt();
@@ -72,28 +103,28 @@ public class BlogApp {
             article.setTitle(title);
             articleRepo.save(article);
         });
-        if(art.isEmpty()){
+        if (art.isEmpty()) {
             System.out.println("Brak takiego artykułu!");
         }
     }
 
-    static private void printAllArticles(){
+    static private void printAllArticles() {
         articleRepo.findAll().forEach(article -> {
-            System.out.println("nick autora "
-                    + article.getAuthor().getNick() + ", tytuł "
-                    + article.getTitle() +", rating "
-                    + article.getRating() + ", tags "
-                    + article.getTags());
+                    System.out.println("nick autora "
+                            + article.getAuthor().getNick() + ", tytuł "
+                            + article.getTitle() + ", rating "
+                            + article.getRating() + ", tags "
+                            + article.getTags());
                 }
         );
     }
 
     public static void main(String[] args) {
         insertData();
-        while(true){
+        while (true) {
             printMenu();
-            if(scanner.hasNextInt()){
-                switch (scanner.nextInt()){
+            if (scanner.hasNextInt()) {
+                switch (scanner.nextInt()) {
                     case 1:
                         addArticle();
                         break;
@@ -101,9 +132,13 @@ public class BlogApp {
                         changeTitleByMerge();
                         break;
                     case 3:
+                        removeArticleById();
                         break;
                     case 4:
                         printAllArticles();
+                        break;
+                    case 5:
+                        findByTag();
                         break;
                     case 6:
                         //TODO dodać wywołanie funkcji dodającej autora
@@ -118,7 +153,8 @@ public class BlogApp {
             }
         }
     }
-    private static void insertData(){
+
+    private static void insertData() {
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
 
@@ -166,7 +202,7 @@ public class BlogApp {
         em.persist(art3);
 
         //Dodaj nowy artykuł nowego autor, który ma nowy address - location
-
+//        System.out.println(em.createQuery("select t from Tag t join Article a").getResultList());
         em.getTransaction().commit();
         em.close();
     }

@@ -1,8 +1,5 @@
 package pl.sda.blog.entity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -34,8 +31,10 @@ public class Author {
     @OneToOne(cascade = CascadeType.ALL)
     private Address location;
 
-    ///@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    //private Set<Article> articles = new HashSet<>();
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    private Set<Article> articles = new HashSet<>();
 }
 
 

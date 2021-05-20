@@ -1,14 +1,10 @@
 package pl.sda.blog.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -21,4 +17,9 @@ public class Tag {
     private long id;
 
     private String label;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    private Set<Article> articles = new HashSet<>();
 }

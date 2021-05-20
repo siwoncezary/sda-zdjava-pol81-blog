@@ -46,7 +46,6 @@ public class JpaRepository<T, K> implements Repository<T, K>{
             em.remove(obj);
         }
         em.getTransaction().commit();
-        em.close();
     }
     @Override
     public void delete(T entity) {
