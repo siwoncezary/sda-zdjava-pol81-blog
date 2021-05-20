@@ -103,5 +103,6 @@ public class EntityManagerDemo {
                 row -> (Long) row[1]
         ));
         System.out.println(countArticleByAuthor);
+        System.out.println(countByAuthor);
     }
 }
