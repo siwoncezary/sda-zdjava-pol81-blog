@@ -1,18 +1,18 @@
 package pl.sda.blog;
 
 import pl.sda.blog.entity.Article;
-import pl.sda.blog.repository.ArticleRepository;
-import pl.sda.blog.repository.Repository;
+import pl.sda.blog.repository.JpaRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class BlogApp {
     static Scanner scanner = new Scanner(System.in);
     static EntityManagerFactory factory = Persistence.createEntityManagerFactory("blog");
-    static ArticleRepository articleRepo = new ArticleRepository(factory);
+    static JpaRepository<Article, Long> articleRepo = new JpaRepository<>(factory, Article.class);
     static private void printMenu(){
         System.out.println("1. Dodaj artykuł");
         System.out.println("2. Zmień tytuł artykułu");
@@ -55,13 +55,14 @@ public class BlogApp {
         scanner.nextLine();
         System.out.println("Wpisz tytuł: ");
         String title = scanner.nextLine();
-        Article art = articleRepo.findById(id);
-        if(art == null){
+        Optional<Article> art = articleRepo.findById(id);
+        art.ifPresent(article -> {
+            article.setTitle(title);
+            articleRepo.save(article);
+        });
+        if(art.isEmpty()){
             System.out.println("Brak takiego artykułu!");
-            return;
         }
-        art.setTitle(title);
-        articleRepo.merge(art);
     }
 
     static private void printAllArticles(){
