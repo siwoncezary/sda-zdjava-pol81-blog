@@ -1,6 +1,7 @@
 package pl.sda.blog.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @NamedQuery(name = "count", query = "Select count(a.id) from Article a")
 @NamedQuery(name = "countByAuthor", query = "select a.author, count(a) as count from Article a group by a.author")
 @NamedQuery(name = "noNullContent", query =  "select a from Article a where a.content is not null")

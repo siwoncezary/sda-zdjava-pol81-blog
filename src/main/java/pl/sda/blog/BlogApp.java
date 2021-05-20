@@ -69,7 +69,7 @@ public class BlogApp {
     }
 
     public static void main(String[] args) {
-        //System.out.println(articleRepo.sumAllRatingForAuthor("Tomek"));
+        insertData();
         while(true){
             printMenu();
             if(scanner.hasNextInt()){
@@ -92,5 +92,17 @@ public class BlogApp {
                 scanner.nextLine();
             }
         }
+    }
+    private static void insertData(){
+        EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        Article art1 = Article.builder().title("Java dla odważnych").rating(125).content("XXX").author("Jan Javowiec").build();
+        Article art2 = Article.builder().title("Jdbc w 5 smakach").rating(155).content("YYY").author("Jan Javowiec").build();
+        Article art3 = Article.builder().title("Hibernacja danych").rating(25).content("BBBB").author("Pafnucy Sen").build();
+        em.persist(art1);
+        em.persist(art2);
+        em.persist(art3);
+        em.getTransaction().commit();
+        em.close();
     }
 }
