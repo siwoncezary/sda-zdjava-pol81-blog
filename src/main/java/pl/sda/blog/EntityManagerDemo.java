@@ -7,8 +7,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.*;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Zdefiniuj encję opisująca autora w pakiecie `entity`
@@ -24,7 +28,7 @@ public class EntityManagerDemo {
     public static void main(String[] args) {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("blog");
         EntityManager entityManager = factory.createEntityManager();
-        Article article = new Article(0, "Tomek", "AAA","BBB", Timestamp.valueOf(LocalDateTime.now()), 14);
+        Article article = new Article(0, "Tomek", "BBB","BBB", Timestamp.valueOf(LocalDateTime.now()), 14);
         //zapis encji do bazy
         entityManager.getTransaction().begin();
         entityManager.persist(article);
@@ -87,7 +91,17 @@ public class EntityManagerDemo {
                         '}';
             }
         }
-        List countByAuthor = entityManager.createNamedQuery("countByAuthor").getResultList();
-        System.out.println(countByAuthor);
+        List<Object[]> countByAuthor = entityManager.createNamedQuery("countByAuthor").getResultList();
+        //przykład przeglądania wyników zapytania, które mapujemy do kolekcji tablic objectów
+        for(Object[] row: countByAuthor){
+            System.out.print("Autor: " + row[0] +", liczba artykułów: " + row[1]);
+            System.out.println();
+        }
+        //Zamiana wyniku zapytania na mapę
+        Map<String, Long> countArticleByAuthor = countByAuthor.stream().collect(Collectors.toMap(
+                row -> (String) row[0],
+                row -> (Long) row[1]
+        ));
+        System.out.println(countArticleByAuthor);
     }
 }
