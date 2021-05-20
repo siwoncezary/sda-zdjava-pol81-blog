@@ -1,10 +1,6 @@
 package pl.sda.blog;
 
-import pl.sda.blog.entity.Address;
-import pl.sda.blog.entity.Article;
-import pl.sda.blog.entity.Author;
-import pl.sda.blog.entity.EmailAddress;
-import pl.sda.blog.repository.AuthorRepository;
+import pl.sda.blog.entity.*;
 import pl.sda.blog.repository.JpaAuthorRepository;
 import pl.sda.blog.repository.JpaRepository;
 
@@ -30,7 +26,9 @@ public class BlogApp {
         System.out.println("0. Koniec");
     }
     static private void printAuthors(){
-        authors.findAll().forEach(System.out::println);
+        authors.findAll().forEach(author -> {
+            System.out.println("Nick: " + author.getNick() +", email: " + author.getAddress());
+        });
     }
 
     static private void addArticle(){
@@ -80,7 +78,14 @@ public class BlogApp {
     }
 
     static private void printAllArticles(){
-        articleRepo.findAll().forEach(System.out::println);
+        articleRepo.findAll().forEach(article -> {
+            System.out.println("nick autora "
+                    + article.getAuthor().getNick() + ", tytuł "
+                    + article.getTitle() +", rating "
+                    + article.getRating() + ", tags "
+                    + article.getTags());
+                }
+        );
     }
 
     public static void main(String[] args) {
@@ -140,10 +145,22 @@ public class BlogApp {
         //em.remove(author1);
         //Address address = em.find(Address.class, location.getId());
         //System.out.println(address);
-
+        Tag tag1 = Tag.builder().label("Java").build();
+        Tag tag2 = Tag.builder().label("Programming").build();
+        Tag tag3 = Tag.builder().label("Jdbc").build();
+        em.persist(tag1);
+        em.persist(tag2);
+        em.persist(tag3);
         Article art1 = Article.builder().title("Java dla odważnych").rating(125).content("XXX").author(author1).build();
         Article art2 = Article.builder().title("Jdbc w 5 smakach").rating(155).content("YYY").author(author2).build();
         Article art3 = Article.builder().title("Hibernacja danych").rating(25).content("BBBB").author(author1).build();
+        art1.addTag(tag1);
+        art1.addTag(tag3);
+        art2.addTag(tag2);
+        art2.addTag(tag3);
+        art3.addTag(tag1);
+        art3.addTag(tag2);
+
         em.persist(art1);
         em.persist(art2);
         em.persist(art3);

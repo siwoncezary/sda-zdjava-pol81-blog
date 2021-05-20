@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -23,7 +25,7 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Author author;
 
     @Column(unique = true, length = 100)
@@ -36,4 +38,14 @@ public class Article {
     private Timestamp published;
 
     private int rating;
+
+    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();
+
+    public void addTag(Tag tag){
+        if (tags == null){
+            tags = new HashSet<>();
+        }
+        tags.add(tag);
+    }
 }

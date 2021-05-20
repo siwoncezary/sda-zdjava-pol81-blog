@@ -34,8 +34,8 @@ public class Author {
     @OneToOne(cascade = CascadeType.ALL)
     private Address location;
 
-    @OneToMany
-    private Set<Article> articles = new HashSet<>();
+    ///@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    //private Set<Article> articles = new HashSet<>();
 }
 
 
