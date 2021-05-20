@@ -23,8 +23,8 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
-    private String author;
+    @ManyToOne
+    private Author author;
 
     @Column(unique = true, length = 100)
     private String title;
@@ -36,11 +36,4 @@ public class Article {
     private Timestamp published;
 
     private int rating;
-
-    @PrePersist
-    private void setDefaultTimestamp(){
-        System.out.println("Wywołanie metody PrePersist");
-        //lepiej korzystać z adnotacji automatycznego tworzenia timestamp
-        //published = Timestamp.valueOf(LocalDateTime.now());
-    }
 }
